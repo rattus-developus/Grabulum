@@ -6,8 +6,10 @@ public class Swing : MonoBehaviour
     [SerializeField] GameObject core;
     [SerializeField] LineRenderer lineRenderer;
     [SerializeField] HingeJoint2D hinge;
-    bool swinging;
-    bool dead;
+    public bool swinging;
+    public bool canSwing;
+    public bool dead;
+    public bool won;
 
     void Awake()
     {
@@ -16,6 +18,12 @@ public class Swing : MonoBehaviour
 
     void StartSwing()
     {
+        if(!canSwing)
+        {
+            canSwing = true;
+            return;
+        }
+        Ball.Instance.GetComponent<Rigidbody2D>().simulated = true;
         swinging = true;
         lineRenderer.enabled = true;
         hinge.enabled = true;
@@ -34,7 +42,7 @@ public class Swing : MonoBehaviour
 
     void Update()
     {
-        if (dead) return;
+        if (dead || won) return;
         if (Input.GetKeyDown(KeyCode.Mouse0)) StartSwing();
         if (Input.GetKeyUp(KeyCode.Mouse0)) EndSwing();
 
@@ -47,8 +55,15 @@ public class Swing : MonoBehaviour
         }
     }
 
+    public void Restart()
+    {
+        hinge.enabled = true;
+        lineRenderer.enabled = false;
+    }
+
     public void Die()
     {
+        canSwing = false;
         hinge.enabled = false;
         lineRenderer.enabled = false;
     }
